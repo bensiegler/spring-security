@@ -10,7 +10,7 @@ buildscript {
 plugins {
 	id 'java-library'
 	id 'io.spring.convention.repository'
-	id 'io.spring.convention.springdependencymangement'
+	id 'io.spring.convention.management-configuration'
 	id 'io.spring.convention.dependency-set'
 	id 'io.spring.convention.checkstyle'
 	id 'io.spring.convention.tests-configuration'
@@ -34,14 +34,10 @@ repositories {
 }
 
 dependencies {
-	constraints {
-		management("org.opensaml:opensaml-core:3.+")
-		management("org.opensaml:opensaml-saml-api:3.+")
-		management("org.opensaml:opensaml-saml-impl:3.+")
-	}
+	management platform(project(":spring-security-dependencies"))
 
-	compile project(':spring-security-core')
-	compile project(':spring-security-web')
+	api project(':spring-security-core')
+	api project(':spring-security-web')
 
 	provided("org.opensaml:opensaml-core")
 	provided("org.opensaml:opensaml-saml-api")
@@ -49,5 +45,5 @@ dependencies {
 
 	provided 'javax.servlet:javax.servlet-api'
 
-	testCompile 'com.squareup.okhttp3:mockwebserver'
+	testImplementation 'com.squareup.okhttp3:mockwebserver'
 }

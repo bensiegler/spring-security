@@ -1,5 +1,5 @@
 apply plugin: 'io.spring.convention.docs'
-apply plugin: 'io.spring.convention.springdependencymangement'
+apply plugin: 'io.spring.convention.management-configuration'
 apply plugin: 'io.spring.convention.dependency-set'
 apply plugin: 'io.spring.convention.repository'
 apply plugin: 'java'
@@ -21,7 +21,7 @@ asciidoctorj {
 		revnumber : project.version,
 		'gh-url': ghUrl,
 		'gh-samples-url': "$ghUrl/samples"
-	attributeProvider resolvedVersions(project.configurations.testCompile)
+	attributeProvider resolvedVersions(project.configurations.testRuntimeClasspath)
 }
 
 docsZip {
@@ -31,9 +31,10 @@ docsZip {
 }
 
 dependencies {
-	testCompile "com.unboundid:unboundid-ldapsdk"
-	testCompile "org.apache.directory.server:apacheds-core"
-	testCompile "org.springframework:spring-core"
+	management platform(project(":spring-security-dependencies"))
+	testImplementation "com.unboundid:unboundid-ldapsdk"
+	testImplementation "org.apache.directory.server:apacheds-core"
+	testImplementation "org.springframework:spring-core"
 }
 
 def resolvedVersions(Configuration configuration) {
