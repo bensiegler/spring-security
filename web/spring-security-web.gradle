@@ -1,0 +1,32 @@
+apply plugin: 'io.spring.convention.spring-module'
+
+dependencies {
+	management platform(project(":spring-security-dependencies"))
+	api project(':spring-security-core')
+	api springCoreDependency
+	api 'org.springframework:spring-aop'
+	api 'org.springframework:spring-beans'
+	api 'org.springframework:spring-context'
+	api 'org.springframework:spring-expression'
+	api 'org.springframework:spring-web'
+
+	optional 'com.fasterxml.jackson.core:jackson-databind'
+	optional 'io.projectreactor:reactor-core'
+	optional 'org.springframework:spring-jdbc'
+	optional 'org.springframework:spring-tx'
+	optional 'org.springframework:spring-webflux'
+	optional 'org.springframework:spring-webmvc'
+
+	provided 'javax.servlet:javax.servlet-api'
+
+	testImplementation project(path: ':spring-security-core', configuration: 'tests')
+	testImplementation 'commons-codec:commons-codec'
+	testImplementation 'io.projectreactor:reactor-test'
+	testImplementation 'javax.xml.bind:jaxb-api'
+	testImplementation 'org.skyscreamer:jsonassert'
+	testImplementation 'org.springframework:spring-webflux'
+	testImplementation 'org.synchronoss.cloud:nio-multipart-parser'
+	testImplementation powerMock2Dependencies
+
+	testRuntimeOnly 'org.hsqldb:hsqldb'
+}
