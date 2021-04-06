@@ -14,6 +14,8 @@ public interface TwoFactorAuthCodeService {
 
     TwoFactorAuthCodeWrapper validateCode(String codeToCheck, String sessionId) throws BadCredentialsException;
 
+    TwoFactorAuthCodeWrapper getCode(String sessionId);
+
     void cleanUp(String sessionId);
 
     boolean isAwaitingCode(String sessionId);
@@ -23,4 +25,6 @@ public interface TwoFactorAuthCodeService {
     void setCodeGenerationStrategy(TwoFactorAuthCodeGenerationStrategy generationStrategy);
 
     void setExpirationTime(long expirationTime);
+
+
 }

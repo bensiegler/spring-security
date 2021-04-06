@@ -39,7 +39,7 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 	private TwoFactorAuthCodeRepository codeRepository;
 	private Long codeExpirationTime;
 
-	private String twoFactorProcessingUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_PROCESSING_ANT_MATCHER.getPattern();
+	private String twoFactorProcessingUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_PROCESSING_URL;
 	private String twoFactorRedirectUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_REDIRECT_URL;
 	private String twoFactorFailureUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_FAILURE_URL;
 
@@ -85,6 +85,7 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 		filter.setTwoFactorProcessingUrl(twoFactorProcessingUrl);
 		filter.setTwoFactorRedirectUrl(twoFactorRedirectUrl);
 		filter.setTwoFactorFailureUrl(twoFactorFailureUrl);
+		filter.setLoginRequestUrl(getLoginPage());
 
 		if(addTwoFactorAuthenticationProvider) {
 			Assert.notNull(userDetailsService, "You must assign a UserDetailsService if not providing your own TwoFactorCodeAuthenticationProvider");

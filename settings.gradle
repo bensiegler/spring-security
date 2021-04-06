@@ -44,7 +44,7 @@ buildFiles.each { File buildFile ->
 		if (isKotlin) {
 			projectName = buildFile.name.replace('.gradle.kts', '')
 		} else {
-		 	projectName = buildFile.name.replace('.gradle', '')
+			projectName = buildFile.name.replace('.gradle', '')
 		}
 		String projectPath = ':' + projectName;
 		include projectPath

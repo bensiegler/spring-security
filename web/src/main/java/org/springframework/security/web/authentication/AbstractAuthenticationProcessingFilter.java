@@ -359,7 +359,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 		setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(filterProcessesUrl));
 	}
 
-	public final void setRequiresAuthenticationRequestMatcher(RequestMatcher requestMatcher) {
+	public void setRequiresAuthenticationRequestMatcher(RequestMatcher requestMatcher) {
 		Assert.notNull(requestMatcher, "requestMatcher cannot be null");
 		this.requiresAuthenticationRequestMatcher = requestMatcher;
 	}

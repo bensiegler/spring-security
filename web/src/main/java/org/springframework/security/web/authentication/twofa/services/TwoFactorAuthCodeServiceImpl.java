@@ -47,6 +47,10 @@ public class TwoFactorAuthCodeServiceImpl implements TwoFactorAuthCodeService {
 		return realCode;
     }
 
+    public TwoFactorAuthCodeWrapper getCodeBySessionId(String sessionId) {
+    	return repository.getCode(sessionId);
+	}
+
     @Override
     public void cleanUp(String sessionId) {
         repository.removeCode(sessionId);
