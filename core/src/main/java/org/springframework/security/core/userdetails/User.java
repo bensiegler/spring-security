@@ -158,6 +158,16 @@ public class User implements UserDetails, CredentialsContainer {
 		this.password = null;
 	}
 
+	@Override
+	public boolean isTwoFactorAuthEnabled() {
+		return false;
+	}
+
+	@Override
+	public String getTwoFactorAuthSendLocation() {
+		return null;
+	}
+
 	private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
 		Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
 		// Ensure array iteration order is predictable (as per

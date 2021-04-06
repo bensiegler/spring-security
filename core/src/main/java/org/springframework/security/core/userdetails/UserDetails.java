@@ -91,4 +91,18 @@ public interface UserDetails extends Serializable {
 	 */
 	boolean isEnabled();
 
+	/**
+	 * Indicates whether the user has activated two factor authentication. Applications that
+	 * do not use two factor authentication can set this to return false always.
+	 * @return <code>true</code> if the user has activated 2FA. Returns <code>false</code> otherwise
+	 */
+	boolean isTwoFactorAuthEnabled();
+
+	/**
+	 * Indicates where the user has specified they would like their two factor authentication code
+	 * to be sent.
+	 * @return A string representation of where the two factor authentication code should be sent
+	 */
+	String getTwoFactorAuthSendLocation();
+
 }

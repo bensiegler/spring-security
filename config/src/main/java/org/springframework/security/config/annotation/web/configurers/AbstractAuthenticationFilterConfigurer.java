@@ -59,7 +59,12 @@ import org.springframework.web.accept.HeaderContentNegotiationStrategy;
  * @see FormLoginConfigurer
  * @see OpenIDLoginConfigurer
  */
-public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecurityBuilder<B>, T extends AbstractAuthenticationFilterConfigurer<B, T, F>, F extends AbstractAuthenticationProcessingFilter>
+public abstract class AbstractAuthenticationFilterConfigurer
+		<
+			B extends HttpSecurityBuilder<B>,
+			T extends AbstractAuthenticationFilterConfigurer<B, T, F>,
+			F extends AbstractAuthenticationProcessingFilter
+		>
 		extends AbstractHttpConfigurer<T, B> {
 
 	private F authFilter;
@@ -387,7 +392,7 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecur
 	/**
 	 * Updates the default values for access.
 	 */
-	protected final void updateAccessDefaults(B http) {
+	protected void updateAccessDefaults(B http) {
 		if (this.permitAll) {
 			PermitAllSupport.permitAll(http, this.loginPage, this.loginProcessingUrl, this.failureUrl);
 		}
@@ -400,6 +405,10 @@ public abstract class AbstractAuthenticationFilterConfigurer<B extends HttpSecur
 	private void setLoginPage(String loginPage) {
 		this.loginPage = loginPage;
 		this.authenticationEntryPoint = new LoginUrlAuthenticationEntryPoint(loginPage);
+	}
+
+	public boolean isPermitAll() {
+		return permitAll;
 	}
 
 	@SuppressWarnings("unchecked")

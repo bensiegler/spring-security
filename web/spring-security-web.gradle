@@ -8,6 +8,8 @@ dependencies {
 	compile 'org.springframework:spring-context'
 	compile 'org.springframework:spring-expression'
 	compile 'org.springframework:spring-web'
+	compile group: 'com.sun.mail', name: 'javax.mail', version: '1.6.2'
+
 
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'io.projectreactor:reactor-core'

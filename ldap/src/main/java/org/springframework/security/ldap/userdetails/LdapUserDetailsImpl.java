@@ -116,6 +116,16 @@ public class LdapUserDetailsImpl implements LdapUserDetails, PasswordPolicyData 
 	}
 
 	@Override
+	public boolean isTwoFactorAuthEnabled() {
+		return false;
+	}
+
+	@Override
+	public String getTwoFactorAuthSendLocation() {
+		return null;
+	}
+
+	@Override
 	public void eraseCredentials() {
 		this.password = null;
 	}

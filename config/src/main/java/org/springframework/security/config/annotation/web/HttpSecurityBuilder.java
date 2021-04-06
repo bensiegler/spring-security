@@ -131,6 +131,7 @@ public interface HttpSecurityBuilder<H extends HttpSecurityBuilder<H>>
 	 * <li>{@link AbstractPreAuthenticatedProcessingFilter}</li>
 	 * <li><a href="
 	 * {@docRoot}/org/springframework/security/cas/web/CasAuthenticationFilter.html">CasAuthenticationFilter</a></li>
+	 * <li>{@link org.springframework.security.web.authentication.TwoFactorAuthenticationFilter}</li>
 	 * <li>{@link UsernamePasswordAuthenticationFilter}</li>
 	 * <li>{@link OpenIDAuthenticationFilter}</li>
 	 * <li>{@link org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter}</li>

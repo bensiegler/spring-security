@@ -18,6 +18,7 @@ package org.springframework.security.web.authentication;
 
 import java.io.IOException;
 
+import javax.security.auth.login.CredentialException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -121,7 +122,7 @@ public abstract class AbstractAuthenticationProcessingFilter extends GenericFilt
 
 	private RememberMeServices rememberMeServices = new NullRememberMeServices();
 
-	private RequestMatcher requiresAuthenticationRequestMatcher;
+	protected RequestMatcher requiresAuthenticationRequestMatcher;
 
 	private boolean continueChainBeforeSuccessfulAuthentication = false;
 

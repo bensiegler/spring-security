@@ -39,26 +39,8 @@ import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.AnonymousConfigurer;
-import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.*;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer.AuthorizationManagerRequestMatcherRegistry;
-import org.springframework.security.config.annotation.web.configurers.ChannelSecurityConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
-import org.springframework.security.config.annotation.web.configurers.FormLoginConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HttpBasicConfigurer;
-import org.springframework.security.config.annotation.web.configurers.JeeConfigurer;
-import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
-import org.springframework.security.config.annotation.web.configurers.PortMapperConfigurer;
-import org.springframework.security.config.annotation.web.configurers.RememberMeConfigurer;
-import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
-import org.springframework.security.config.annotation.web.configurers.SecurityContextConfigurer;
-import org.springframework.security.config.annotation.web.configurers.ServletApiConfigurer;
-import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
-import org.springframework.security.config.annotation.web.configurers.X509Configurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2ClientConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.client.OAuth2LoginConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
@@ -1937,6 +1919,16 @@ public final class HttpSecurity extends AbstractConfiguredSecurityBuilder<Defaul
 	public HttpSecurity formLogin(Customizer<FormLoginConfigurer<HttpSecurity>> formLoginCustomizer) throws Exception {
 		formLoginCustomizer.customize(getOrApply(new FormLoginConfigurer<>()));
 		return HttpSecurity.this;
+	}
+
+
+	public TwoFactorLoginConfigurer<HttpSecurity> twoFactorLogin() throws Exception {
+		return getOrApply(new TwoFactorLoginConfigurer<>());
+	}
+
+	public HttpSecurity twoFactorLogin(Customizer<TwoFactorLoginConfigurer<HttpSecurity>> twoFactorLoginCustomizer) throws Exception {
+		twoFactorLoginCustomizer.customize(getOrApply(new TwoFactorLoginConfigurer<>()));
+		return this;
 	}
 
 	/**

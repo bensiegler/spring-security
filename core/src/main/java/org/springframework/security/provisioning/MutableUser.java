@@ -79,4 +79,13 @@ class MutableUser implements MutableUserDetails {
 		return this.delegate.isEnabled();
 	}
 
+	@Override
+	public boolean isTwoFactorAuthEnabled() {
+		return this.delegate.isTwoFactorAuthEnabled();
+	}
+
+	@Override
+	public String getTwoFactorAuthSendLocation() {
+		return this.delegate.getTwoFactorAuthSendLocation();
+	}
 }

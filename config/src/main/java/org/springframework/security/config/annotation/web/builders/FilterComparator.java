@@ -28,6 +28,7 @@ import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.TwoFactorAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -91,6 +92,7 @@ final class FilterComparator implements Comparator<Filter>, Serializable {
 		this.filterToOrder.put(
 				"org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter",
 				order.next());
+		put(TwoFactorAuthenticationFilter.class, order.next());
 		put(UsernamePasswordAuthenticationFilter.class, order.next());
 		order.next(); // gh-8105
 		this.filterToOrder.put("org.springframework.security.openid.OpenIDAuthenticationFilter", order.next());

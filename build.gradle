@@ -13,6 +13,10 @@ buildscript {
 	}
 }
 
+plugins {
+	id 'maven'
+}
+
 apply plugin: 'io.spring.nohttp'
 apply plugin: 'locks'
 apply plugin: 'io.spring.convention.root'
@@ -29,7 +33,19 @@ dependencyManagementExport.projects = subprojects.findAll { !it.name.contains('-
 
 repositories {
 	mavenCentral()
+	mavenLocal()
 }
+
+
+
+//uploadArchives {
+//	repositories {
+//		mavenDeployer {
+//			repository(url: "file://~/.m2")
+//		}
+//	}
+//}
+
 
 subprojects {
 	plugins.withType(JavaPlugin) {
