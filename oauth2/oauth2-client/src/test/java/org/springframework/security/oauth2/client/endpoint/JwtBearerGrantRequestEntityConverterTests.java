@@ -29,6 +29,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.registration.TestClientRegistrations;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.endpoint.OAuth2ParameterNames;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.TestJwts;
 import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,17 +40,18 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link OAuth2PasswordGrantRequestEntityConverter}.
+ * Tests for {@link JwtBearerGrantRequestEntityConverter}.
  *
+ * @author Hassene Laaribi
  * @author Joe Grandja
  */
-public class OAuth2PasswordGrantRequestEntityConverterTests {
+public class JwtBearerGrantRequestEntityConverterTests {
 
-	private OAuth2PasswordGrantRequestEntityConverter converter;
+	private JwtBearerGrantRequestEntityConverter converter;
 
 	@Before
 	public void setup() {
-		this.converter = new OAuth2PasswordGrantRequestEntityConverter();
+		this.converter = new JwtBearerGrantRequestEntityConverter();
 	}
 
 	@Test
@@ -77,57 +80,69 @@ public class OAuth2PasswordGrantRequestEntityConverterTests {
 
 	@Test
 	public void convertWhenHeadersConverterSetThenCalled() {
-		Converter<OAuth2PasswordGrantRequest, HttpHeaders> headersConverter1 = mock(Converter.class);
+		Converter<JwtBearerGrantRequest, HttpHeaders> headersConverter1 = mock(Converter.class);
 		this.converter.setHeadersConverter(headersConverter1);
-		Converter<OAuth2PasswordGrantRequest, HttpHeaders> headersConverter2 = mock(Converter.class);
+		Converter<JwtBearerGrantRequest, HttpHeaders> headersConverter2 = mock(Converter.class);
 		this.converter.addHeadersConverter(headersConverter2);
-		ClientRegistration clientRegistration = TestClientRegistrations.password().build();
-		OAuth2PasswordGrantRequest passwordGrantRequest = new OAuth2PasswordGrantRequest(clientRegistration, "user1",
-				"password");
-		this.converter.convert(passwordGrantRequest);
+		// @formatter:off
+		ClientRegistration clientRegistration = TestClientRegistrations.clientRegistration()
+				.authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
+				.scope("read", "write")
+				.build();
+		// @formatter:on
+		Jwt jwtAssertion = TestJwts.jwt().build();
+		JwtBearerGrantRequest jwtBearerGrantRequest = new JwtBearerGrantRequest(clientRegistration, jwtAssertion);
+		this.converter.convert(jwtBearerGrantRequest);
 		InOrder inOrder = inOrder(headersConverter1, headersConverter2);
-		inOrder.verify(headersConverter1).convert(any(OAuth2PasswordGrantRequest.class));
-		inOrder.verify(headersConverter2).convert(any(OAuth2PasswordGrantRequest.class));
+		inOrder.verify(headersConverter1).convert(any(JwtBearerGrantRequest.class));
+		inOrder.verify(headersConverter2).convert(any(JwtBearerGrantRequest.class));
 	}
 
 	@Test
 	public void convertWhenParametersConverterSetThenCalled() {
-		Converter<OAuth2PasswordGrantRequest, MultiValueMap<String, String>> parametersConverter1 = mock(
-				Converter.class);
+		Converter<JwtBearerGrantRequest, MultiValueMap<String, String>> parametersConverter1 = mock(Converter.class);
 		this.converter.setParametersConverter(parametersConverter1);
-		Converter<OAuth2PasswordGrantRequest, MultiValueMap<String, String>> parametersConverter2 = mock(
-				Converter.class);
+		Converter<JwtBearerGrantRequest, MultiValueMap<String, String>> parametersConverter2 = mock(Converter.class);
 		this.converter.addParametersConverter(parametersConverter2);
-		ClientRegistration clientRegistration = TestClientRegistrations.password().build();
-		OAuth2PasswordGrantRequest passwordGrantRequest = new OAuth2PasswordGrantRequest(clientRegistration, "user1",
-				"password");
-		this.converter.convert(passwordGrantRequest);
+		// @formatter:off
+		ClientRegistration clientRegistration = TestClientRegistrations.clientRegistration()
+				.authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
+				.scope("read", "write")
+				.build();
+		// @formatter:on
+		Jwt jwtAssertion = TestJwts.jwt().build();
+		JwtBearerGrantRequest jwtBearerGrantRequest = new JwtBearerGrantRequest(clientRegistration, jwtAssertion);
+		this.converter.convert(jwtBearerGrantRequest);
 		InOrder inOrder = inOrder(parametersConverter1, parametersConverter2);
-		inOrder.verify(parametersConverter1).convert(any(OAuth2PasswordGrantRequest.class));
-		inOrder.verify(parametersConverter2).convert(any(OAuth2PasswordGrantRequest.class));
+		inOrder.verify(parametersConverter1).convert(any(JwtBearerGrantRequest.class));
+		inOrder.verify(parametersConverter2).convert(any(JwtBearerGrantRequest.class));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
 	public void convertWhenGrantRequestValidThenConverts() {
-		ClientRegistration clientRegistration = TestClientRegistrations.password().build();
-		OAuth2PasswordGrantRequest passwordGrantRequest = new OAuth2PasswordGrantRequest(clientRegistration, "user1",
-				"password");
-		RequestEntity<?> requestEntity = this.converter.convert(passwordGrantRequest);
+		// @formatter:off
+		ClientRegistration clientRegistration = TestClientRegistrations.clientRegistration()
+				.authorizationGrantType(AuthorizationGrantType.JWT_BEARER)
+				.scope("read", "write")
+				.build();
+		// @formatter:on
+		Jwt jwtAssertion = TestJwts.jwt().build();
+		JwtBearerGrantRequest jwtBearerGrantRequest = new JwtBearerGrantRequest(clientRegistration, jwtAssertion);
+		RequestEntity<?> requestEntity = this.converter.convert(jwtBearerGrantRequest);
 		assertThat(requestEntity.getMethod()).isEqualTo(HttpMethod.POST);
 		assertThat(requestEntity.getUrl().toASCIIString())
 				.isEqualTo(clientRegistration.getProviderDetails().getTokenUri());
 		HttpHeaders headers = requestEntity.getHeaders();
-		assertThat(headers.getAccept()).contains(MediaType.APPLICATION_JSON_UTF8);
+		assertThat(headers.getAccept()).contains(MediaType.valueOf(MediaType.APPLICATION_JSON_UTF8_VALUE));
 		assertThat(headers.getContentType())
 				.isEqualTo(MediaType.valueOf(MediaType.APPLICATION_FORM_URLENCODED_VALUE + ";charset=UTF-8"));
 		assertThat(headers.getFirst(HttpHeaders.AUTHORIZATION)).startsWith("Basic ");
 		MultiValueMap<String, String> formParameters = (MultiValueMap<String, String>) requestEntity.getBody();
 		assertThat(formParameters.getFirst(OAuth2ParameterNames.GRANT_TYPE))
-				.isEqualTo(AuthorizationGrantType.PASSWORD.getValue());
-		assertThat(formParameters.getFirst(OAuth2ParameterNames.USERNAME)).isEqualTo("user1");
-		assertThat(formParameters.getFirst(OAuth2ParameterNames.PASSWORD)).isEqualTo("password");
-		assertThat(formParameters.getFirst(OAuth2ParameterNames.SCOPE)).contains(clientRegistration.getScopes());
+				.isEqualTo(AuthorizationGrantType.JWT_BEARER.getValue());
+		assertThat(formParameters.getFirst(OAuth2ParameterNames.ASSERTION)).isEqualTo(jwtAssertion.getTokenValue());
+		assertThat(formParameters.getFirst(OAuth2ParameterNames.SCOPE)).isEqualTo("read write");
 	}
 
 }

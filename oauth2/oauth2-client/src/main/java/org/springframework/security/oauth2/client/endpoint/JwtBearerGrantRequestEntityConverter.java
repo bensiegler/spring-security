@@ -27,25 +27,26 @@ import org.springframework.util.StringUtils;
 
 /**
  * An implementation of an {@link AbstractOAuth2AuthorizationGrantRequestEntityConverter}
- * that converts the provided {@link OAuth2ClientCredentialsGrantRequest} to a
- * {@link RequestEntity} representation of an OAuth 2.0 Access Token Request for the
- * Client Credentials Grant.
+ * that converts the provided {@link JwtBearerGrantRequest} to a {@link RequestEntity}
+ * representation of an OAuth 2.0 Access Token Request for the JWT Bearer Grant.
  *
  * @author Joe Grandja
- * @since 5.1
+ * @since 5.5
  * @see AbstractOAuth2AuthorizationGrantRequestEntityConverter
- * @see OAuth2ClientCredentialsGrantRequest
+ * @see JwtBearerGrantRequest
  * @see RequestEntity
+ * @see <a target="_blank" href="https://tools.ietf.org/html/rfc7523#section-2.1">Section
+ * 2.1 Using JWTs as Authorization Grants</a>
  */
-public class OAuth2ClientCredentialsGrantRequestEntityConverter
-		extends AbstractOAuth2AuthorizationGrantRequestEntityConverter<OAuth2ClientCredentialsGrantRequest> {
+public class JwtBearerGrantRequestEntityConverter
+		extends AbstractOAuth2AuthorizationGrantRequestEntityConverter<JwtBearerGrantRequest> {
 
 	@Override
-	protected MultiValueMap<String, String> createParameters(
-			OAuth2ClientCredentialsGrantRequest clientCredentialsGrantRequest) {
-		ClientRegistration clientRegistration = clientCredentialsGrantRequest.getClientRegistration();
+	protected MultiValueMap<String, String> createParameters(JwtBearerGrantRequest jwtBearerGrantRequest) {
+		ClientRegistration clientRegistration = jwtBearerGrantRequest.getClientRegistration();
 		MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
-		parameters.add(OAuth2ParameterNames.GRANT_TYPE, clientCredentialsGrantRequest.getGrantType().getValue());
+		parameters.add(OAuth2ParameterNames.GRANT_TYPE, jwtBearerGrantRequest.getGrantType().getValue());
+		parameters.add(OAuth2ParameterNames.ASSERTION, jwtBearerGrantRequest.getJwt().getTokenValue());
 		if (!CollectionUtils.isEmpty(clientRegistration.getScopes())) {
 			parameters.add(OAuth2ParameterNames.SCOPE,
 					StringUtils.collectionToDelimitedString(clientRegistration.getScopes(), " "));

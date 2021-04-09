@@ -2,7 +2,7 @@ buildscript {
 	dependencies {
 		classpath "io.spring.javaformat:spring-javaformat-gradle-plugin:$springJavaformatVersion"
 		classpath 'io.spring.nohttp:nohttp-gradle:0.0.5.RELEASE'
-		classpath "io.freefair.gradle:aspectj-plugin:5.3.0"
+		classpath "io.freefair.gradle:aspectj-plugin:5.3.3.3"
 		classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 	}
 	repositories {
@@ -16,6 +16,7 @@ apply plugin: 'locks'
 apply plugin: 'io.spring.convention.root'
 apply plugin: 'org.jetbrains.kotlin.jvm'
 apply plugin: 'org.springframework.security.update-dependencies'
+apply plugin: 'org.springframework.security.sagan'
 
 group = 'org.springframework.security'
 description = 'Spring Security'
@@ -26,6 +27,11 @@ ext.milestoneBuild = !(snapshotBuild || releaseBuild)
 
 repositories {
 	mavenCentral()
+}
+
+tasks.named("saganCreateRelease") {
+	referenceDocUrl = "https://docs.spring.io/spring-security/site/docs/{version}/reference/html5/"
+	apiDocUrl = "https://docs.spring.io/spring-security/site/docs/{version}/api/"
 }
 
 updateDependenciesSettings {
