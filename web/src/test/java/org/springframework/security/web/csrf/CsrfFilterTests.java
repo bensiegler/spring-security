@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2013 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -318,6 +318,20 @@ public class CsrfFilterTests {
 		CsrfFilter.skipRequest(request);
 		filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
 		verifyZeroInteractions(repository);
+	}
+
+	// gh-9561
+	@Test
+	public void doFilterWhenTokenIsNullThenNoNullPointer() throws Exception {
+		CsrfFilter filter = createCsrfFilter(this.tokenRepository);
+		CsrfToken token = mock(CsrfToken.class);
+		given(token.getToken()).willReturn(null);
+		given(token.getHeaderName()).willReturn(this.token.getHeaderName());
+		given(token.getParameterName()).willReturn(this.token.getParameterName());
+		given(this.tokenRepository.loadToken(this.request)).willReturn(token);
+		given(this.requestMatcher.matches(this.request)).willReturn(true);
+		filter.doFilterInternal(this.request, this.response, this.filterChain);
+		assertThat(this.response.getStatus()).isEqualTo(HttpServletResponse.SC_OK);
 	}
 
 	@Test
