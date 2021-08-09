@@ -17,15 +17,7 @@
 package org.springframework.security.core.userdetails;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
@@ -164,7 +156,7 @@ public class User implements UserDetails, CredentialsContainer {
 	}
 
 	@Override
-	public String getTwoFactorAuthSendLocation() {
+	public HashMap<Integer, TwoFactorPreference> getTwoFactorAuthPreferences() {
 		return null;
 	}
 

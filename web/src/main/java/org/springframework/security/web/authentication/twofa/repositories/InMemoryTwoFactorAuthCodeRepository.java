@@ -1,7 +1,7 @@
 package org.springframework.security.web.authentication.twofa.repositories;
 
 import org.springframework.cache.Cache;
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCodeWrapper;
+import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 import org.springframework.util.Assert;
 
 public class InMemoryTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRepository {
@@ -18,21 +18,21 @@ public class InMemoryTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRep
     }
 
     @Override
-    public void insertCode(TwoFactorAuthCodeWrapper code) {
+    public void insertCode(SignInAttempt code) {
         cache.put(code.getSessionId(), code);
     }
 
     @Override
-    public TwoFactorAuthCodeWrapper getCode(String sessionId) {
+    public SignInAttempt getCode(String sessionId) {
         if(sessionId == null) {
             return null;
         }
 
-        return cache.get(sessionId, TwoFactorAuthCodeWrapper.class);
+        return cache.get(sessionId, SignInAttempt.class);
     }
 
     @Override
-    public void removeCode(TwoFactorAuthCodeWrapper code) {
+    public void removeCode(SignInAttempt code) {
         removeCode(code.getSessionId());
     }
 

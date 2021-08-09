@@ -2,8 +2,7 @@ package org.springframework.security.web.authentication.twofa.services;
 
 
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCode;
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCodeWrapper;
+import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 import org.springframework.security.web.authentication.twofa.repositories.TwoFactorAuthCodeRepository;
 import org.springframework.security.web.authentication.twofa.stategies.codegeneration.SixDigitAuthCodeGenerationStrategy;
 import org.springframework.security.web.authentication.twofa.stategies.codegeneration.TwoFactorAuthCodeGenerationStrategy;
@@ -25,29 +24,19 @@ public class TwoFactorAuthCodeServiceImpl implements TwoFactorAuthCodeService {
     }
 
     @Override
-    public TwoFactorAuthCodeWrapper generateCode(HttpServletRequest request, String username) {
-        Assert.notNull(request, "request cannot be null!");
-        String sessionId = request.getRequestedSessionId();
-        TwoFactorAuthCodeWrapper codeWrapper = new TwoFactorAuthCodeWrapper(sessionId, generateCodeString(), username, System.currentTimeMillis());
-        repository.insertCode(codeWrapper);
-        return codeWrapper;
+    public String generateCode(HttpServletRequest request, String username) {
+        return generateCodeString();
     }
+
+    public SignInAttempt saveAttempt(HttpServletRequest request, String username, String twoFactorCode) {
+		Assert.notNull(request, "request cannot be null!");
+		SignInAttempt attempt = new SignInAttempt(request.getRequestedSessionId(), twoFactorCode, username, System.currentTimeMillis());
+    	repository.insertCode(attempt);
+    	return attempt;
+	}
 
     @Override
-    public TwoFactorAuthCodeWrapper validateCode(String codeToCheck, String sessionId) throws BadCredentialsException {
-        TwoFactorAuthCodeWrapper realCode = repository.getCode(sessionId);
-
-        if(isCodeExpired(realCode)) {
-			throw new BadCredentialsException("The 2FA code has expired");
-		}
-        if(doCodesMatch(codeToCheck, realCode)) {
-			throw new BadCredentialsException("That 2FA code is invalid!");
-		}
-
-		return realCode;
-    }
-
-    public TwoFactorAuthCodeWrapper getCodeBySessionId(String sessionId) {
+    public SignInAttempt getCode(String sessionId)  {
     	return repository.getCode(sessionId);
 	}
 
@@ -55,18 +44,6 @@ public class TwoFactorAuthCodeServiceImpl implements TwoFactorAuthCodeService {
     public void cleanUp(String sessionId) {
         repository.removeCode(sessionId);
     }
-
-    public boolean isAwaitingCode(String sessionId) {
-    	TwoFactorAuthCodeWrapper wrapper = repository.getCode(sessionId);
-    	if(wrapper != null) {
-    		if(!isCodeExpired(wrapper)) {
-				return true;
-			}
-    		//get codes by username check to make sure all expired codes for this user are removed. This is where housekeeping happens.
-    		repository.removeCode(sessionId);
-		}
-    	return false;
-	}
 
     @Override
     public void setCodeRepository(TwoFactorAuthCodeRepository repository) {
@@ -83,17 +60,28 @@ public class TwoFactorAuthCodeServiceImpl implements TwoFactorAuthCodeService {
 		this.expirationTimeInMillis = expirationTimeInMillis;
 	}
 
-
-	private TwoFactorAuthCode generateCodeString() {
-		return new TwoFactorAuthCode(generationStrategy.generateCode());
+	@Override
+	public String getUsernameFromSessionId(String sessionId) {
+		return repository.getCode(sessionId).getUsername();
 	}
 
-	private boolean doCodesMatch(String codeToCheck, TwoFactorAuthCodeWrapper realCode) {
-		return codeToCheck.equals(realCode.getTwoFactorCode());
+	@Override
+	public boolean isStepOneComplete(String sessionId) {
+		SignInAttempt wrapper = repository.getCode(sessionId);
+
+		if(null == wrapper) {
+			return false;
+		}
+
+		return !isCodeExpired(wrapper);
 	}
 
-	private boolean isCodeExpired(TwoFactorAuthCodeWrapper realCode) throws BadCredentialsException {
-		return realCode.getTimeCreated().getTime() + expirationTimeInMillis < System.currentTimeMillis();
+	private String generateCodeString() {
+		return generationStrategy.generateCode();
+	}
+
+	public boolean isCodeExpired(SignInAttempt realCode) throws BadCredentialsException {
+		return realCode.getTime().getTime() + expirationTimeInMillis < System.currentTimeMillis();
 	}
 
 }

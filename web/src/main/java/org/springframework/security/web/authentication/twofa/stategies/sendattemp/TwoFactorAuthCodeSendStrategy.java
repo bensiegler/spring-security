@@ -2,19 +2,17 @@ package org.springframework.security.web.authentication.twofa.stategies.sendatte
 
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCodeWrapper;
-
-import javax.mail.MessagingException;
+import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 
 /**
- *  A class used to define a strategy for sending two factor authentication codes.
+ *  An interface used to define a strategy for sending two factor authentication codes.
  *  <p>
- *  Would commonly lay out a way of sending an email or a text message.
+ *  Would commonly define a way of sending an email or a text message.
  *
  * @author Ben Siegler
  */
 public interface TwoFactorAuthCodeSendStrategy {
 
-    void sendCode(UserDetails userDetails, TwoFactorAuthCodeWrapper codeWrapper) throws MessagingException;
+    void sendCode(UserDetails userDetails, SignInAttempt codeWrapper) throws Exception;
 
 }

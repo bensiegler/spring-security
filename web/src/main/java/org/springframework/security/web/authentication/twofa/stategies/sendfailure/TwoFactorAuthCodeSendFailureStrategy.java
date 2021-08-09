@@ -1,6 +1,6 @@
 package org.springframework.security.web.authentication.twofa.stategies.sendfailure;
 
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCodeWrapper;
+import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,5 +11,5 @@ import javax.servlet.http.HttpServletRequest;
  */
 public interface TwoFactorAuthCodeSendFailureStrategy {
 
-    void handleSendFailure(TwoFactorAuthCodeWrapper codeWrapper, HttpServletRequest request);
+    void handleSendFailure(SignInAttempt codeWrapper, HttpServletRequest request);
 }

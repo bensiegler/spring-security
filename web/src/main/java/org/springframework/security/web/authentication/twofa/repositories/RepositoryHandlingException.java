@@ -16,4 +16,5 @@ public class RepositoryHandlingException extends RuntimeException {
     public RepositoryHandlingException(Throwable cause) {
         super(cause);
     }
+
 }

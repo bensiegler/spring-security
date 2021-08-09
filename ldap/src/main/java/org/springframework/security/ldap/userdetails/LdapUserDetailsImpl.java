@@ -16,10 +16,7 @@
 
 package org.springframework.security.ldap.userdetails;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import javax.naming.Name;
 
@@ -27,6 +24,7 @@ import org.springframework.ldap.core.DirContextOperations;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
 import org.springframework.security.core.authority.AuthorityUtils;
+import org.springframework.security.core.userdetails.TwoFactorPreference;
 import org.springframework.security.ldap.ppolicy.PasswordPolicyData;
 import org.springframework.util.Assert;
 
@@ -121,7 +119,7 @@ public class LdapUserDetailsImpl implements LdapUserDetails, PasswordPolicyData 
 	}
 
 	@Override
-	public String getTwoFactorAuthSendLocation() {
+	public HashMap<Integer, TwoFactorPreference> getTwoFactorAuthPreferences() {
 		return null;
 	}
 

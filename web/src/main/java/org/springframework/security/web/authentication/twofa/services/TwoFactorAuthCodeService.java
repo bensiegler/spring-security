@@ -1,8 +1,6 @@
 package org.springframework.security.web.authentication.twofa.services;
 
-
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCodeWrapper;
+import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 import org.springframework.security.web.authentication.twofa.repositories.TwoFactorAuthCodeRepository;
 import org.springframework.security.web.authentication.twofa.stategies.codegeneration.TwoFactorAuthCodeGenerationStrategy;
 
@@ -10,15 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 
 public interface TwoFactorAuthCodeService {
 
-    TwoFactorAuthCodeWrapper generateCode(HttpServletRequest request, String username);
+    String generateCode(HttpServletRequest request, String username);
 
-    TwoFactorAuthCodeWrapper validateCode(String codeToCheck, String sessionId) throws BadCredentialsException;
+    SignInAttempt getCode(String sessionId);
 
-    TwoFactorAuthCodeWrapper getCode(String sessionId);
+	SignInAttempt saveAttempt(HttpServletRequest request, String username, String twoFactorCode);
 
     void cleanUp(String sessionId);
 
-    boolean isAwaitingCode(String sessionId);
+    boolean isStepOneComplete(String sessionId);
 
     void setCodeRepository(TwoFactorAuthCodeRepository codeRepository);
 
@@ -26,5 +24,7 @@ public interface TwoFactorAuthCodeService {
 
     void setExpirationTime(long expirationTime);
 
+    String getUsernameFromSessionId(String sessionId);
 
+    boolean isCodeExpired(SignInAttempt signInAttempt);
 }

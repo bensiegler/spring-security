@@ -2,8 +2,7 @@ package org.springframework.security.web.authentication.twofa.repositories;
 
 
 
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCode;
-import org.springframework.security.web.authentication.twofa.dtos.TwoFactorAuthCodeWrapper;
+import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 
 import javax.sql.DataSource;
 import java.sql.PreparedStatement;
@@ -27,14 +26,14 @@ public class DatabaseTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRep
 	}
 
 	@Override
-    public void insertCode(TwoFactorAuthCodeWrapper code) {
+    public void insertCode(SignInAttempt code) {
         try {
             PreparedStatement statement = getPreparedStatement(insertTwoFactorCode);
 
             statement.setString(1, code.getSessionId());
             statement.setString(2, code.getTwoFactorCode());
             statement.setString(3, code.getUsername());
-            statement.setLong(4, code.getTimeCreated().getTime());
+            statement.setLong(4, code.getTime().getTime());
 
             statement.execute();
         }catch(SQLException e) {
@@ -43,28 +42,34 @@ public class DatabaseTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRep
     }
 
     @Override
-    public TwoFactorAuthCodeWrapper getCode(String sessionId) {
-        try {
+    public SignInAttempt getCode(String sessionId) {
+		ResultSet resultSet;
+		try {
             PreparedStatement statement = getPreparedStatement(getTwoFactorCodeBySessionIdQuery);
 
             statement.setString(1, sessionId);
 
-            ResultSet resultSet = statement.executeQuery();
+            resultSet = statement.executeQuery();
             resultSet.next();
-            return new TwoFactorAuthCodeWrapper
-                    (
-                            sessionId,
-                            new TwoFactorAuthCode(resultSet.getString("two_factor_code")),
-                            resultSet.getString("username"),
-                            resultSet.getLong("time_created")
-                    );
-        }catch (SQLException e) {
-            throw new RepositoryHandlingException(e.getMessage(), e.getCause());
-        }
+		}catch (SQLException e) {
+			throw new RepositoryHandlingException(e.getMessage(), e.getCause());
+		}
+
+		try {
+			return new SignInAttempt
+					(
+							sessionId,
+							resultSet.getString("two_factor_code"),
+							resultSet.getString("username"),
+							resultSet.getLong("time_created")
+					);
+		}catch(SQLException e) {
+			return null;
+		}
     }
 
     @Override
-    public void removeCode(TwoFactorAuthCodeWrapper code) {
+    public void removeCode(SignInAttempt code) {
         removeCode(code.getSessionId());
     }
 

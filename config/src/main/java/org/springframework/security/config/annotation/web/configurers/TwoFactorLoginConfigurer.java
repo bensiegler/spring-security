@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.TwoFactorAuthenticationPr
 import org.springframework.security.web.authentication.twofa.repositories.DatabaseTwoFactorAuthCodeRepository;
 import org.springframework.security.web.authentication.twofa.repositories.InMemoryTwoFactorAuthCodeRepository;
 import org.springframework.security.web.authentication.twofa.repositories.TwoFactorAuthCodeRepository;
+import org.springframework.security.web.authentication.twofa.services.TotpService;
 import org.springframework.security.web.authentication.twofa.services.TwoFactorAuthCodeServiceImpl;
 import org.springframework.security.web.authentication.twofa.services.TwoFactorAuthCodeService;
 import org.springframework.security.web.authentication.twofa.stategies.codegeneration.SixDigitAuthCodeGenerationStrategy;
@@ -35,6 +36,7 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 	private String twoFactorAuthCodeFormKey;
 
 	private TwoFactorAuthCodeService codeService;
+	private TotpService totpService = new TotpService();
 	private TwoFactorAuthCodeGenerationStrategy generationStrategy;
 	private TwoFactorAuthCodeRepository codeRepository;
 	private Long codeExpirationTime;
@@ -81,7 +83,6 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 		}
 		filter.setCodeService(codeService);
 
-
 		filter.setTwoFactorProcessingUrl(twoFactorProcessingUrl);
 		filter.setTwoFactorRedirectUrl(twoFactorRedirectUrl);
 		filter.setTwoFactorFailureUrl(twoFactorFailureUrl);
@@ -90,7 +91,7 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 		if(addTwoFactorAuthenticationProvider) {
 			Assert.notNull(userDetailsService, "You must assign a UserDetailsService if not providing your own TwoFactorCodeAuthenticationProvider");
 			ProviderManager manager = (ProviderManager) http.getSharedObject(AuthenticationManager.class);
-			manager.getProviders().add(new TwoFactorAuthenticationProvider(codeService, userDetailsService));
+			manager.getProviders().add(new TwoFactorAuthenticationProvider(codeService, userDetailsService, totpService));
 		}
 		super.configure(http);
 	}
@@ -109,6 +110,11 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 
 	public TwoFactorLoginConfigurer<H> loginPage(String loginPageUrl) {
 		super.loginPage(loginPageUrl);
+		return TwoFactorLoginConfigurer.this;
+	}
+
+	public TwoFactorLoginConfigurer<H> totpService(TotpService service) {
+		this.totpService = service;
 		return TwoFactorLoginConfigurer.this;
 	}
 

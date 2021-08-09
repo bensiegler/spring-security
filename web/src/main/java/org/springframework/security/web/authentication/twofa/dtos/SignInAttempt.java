@@ -2,25 +2,29 @@ package org.springframework.security.web.authentication.twofa.dtos;
 
 import java.sql.Time;
 
-public class TwoFactorAuthCodeWrapper {
+public class SignInAttempt {
 
-    private final TwoFactorAuthCode twoFactorCode;
+    private final String twoFactorCode;
 
     private final String sessionId;
 
     private final String username;
 
-    private final Time timeCreated;
+    private final Time time;
 
-    public TwoFactorAuthCodeWrapper(String sessionId, TwoFactorAuthCode twoFactorCode, String username, long timeCreated) {
+    public SignInAttempt(String sessionId, String twoFactorCode, String username, long time) {
         this.twoFactorCode = twoFactorCode;
         this.sessionId = sessionId;
         this.username = username;
-        this.timeCreated = new Time(timeCreated);
+        this.time = new Time(time);
     }
 
     public String getTwoFactorCode() {
-        return twoFactorCode.getCode();
+    	if(null != twoFactorCode) {
+			return twoFactorCode.trim();
+		}
+
+    	return null;
     }
 
     public String getSessionId() {
@@ -31,7 +35,7 @@ public class TwoFactorAuthCodeWrapper {
         return username;
     }
 
-    public Time getTimeCreated() {
-        return timeCreated;
+    public Time getTime() {
+        return time;
     }
 }

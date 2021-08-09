@@ -10,6 +10,9 @@ dependencies {
 	api 'org.springframework:spring-expression'
 	api 'org.springframework:spring-web'
 
+//	TODO see if this is acceptable
+	implementation group: 'commons-codec', name: 'commons-codec', version: '1.15'
+
 	optional 'com.fasterxml.jackson.core:jackson-databind'
 	optional 'io.projectreactor:reactor-core'
 	optional 'org.springframework:spring-jdbc'

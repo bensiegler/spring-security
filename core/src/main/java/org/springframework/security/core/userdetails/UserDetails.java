@@ -18,6 +18,7 @@ package org.springframework.security.core.userdetails;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -99,10 +100,11 @@ public interface UserDetails extends Serializable {
 	boolean isTwoFactorAuthEnabled();
 
 	/**
-	 * Indicates where the user has specified they would like their two factor authentication code
-	 * to be sent.
-	 * @return A string representation of where the two factor authentication code should be sent
+	 * Indicates where the user has specified they would like their two factor authentication codes
+	 * to be sent. The integer integer key represents the preference, and the string represents either
+	 * a send location or a key used to generate a TOTP code (see https://datatracker.ietf.org/doc/html/rfc4226)
+	 * @return A Hashmap of where the two factor authentication code should be sent/how they should be calculated
 	 */
-	String getTwoFactorAuthSendLocation();
+	HashMap<Integer, TwoFactorPreference> getTwoFactorAuthPreferences();
 
 }

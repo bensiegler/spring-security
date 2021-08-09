@@ -17,9 +17,11 @@
 package org.springframework.security.provisioning;
 
 import java.util.Collection;
+import java.util.HashMap;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.SpringSecurityCoreVersion;
+import org.springframework.security.core.userdetails.TwoFactorPreference;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
@@ -85,7 +87,7 @@ class MutableUser implements MutableUserDetails {
 	}
 
 	@Override
-	public String getTwoFactorAuthSendLocation() {
-		return this.delegate.getTwoFactorAuthSendLocation();
+	public HashMap<Integer, TwoFactorPreference> getTwoFactorAuthPreferences() {
+		return this.delegate.getTwoFactorAuthPreferences();
 	}
 }
