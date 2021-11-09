@@ -31,12 +31,14 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 	public static final String DEFAULT_CODE_RESEND_URL = "/2FA/resend";
 	public static final String DEFAULT_TWO_FACTOR_FAILURE_URL = "/2FA?error";
 	public static final String DEFAULT_TWO_FACTOR_REDIRECT_URL = "/2FA";
+	public static final String DEFAULT_TWO_FACTOR_CHOICE_URL = "/2FA/choice";
 
 	protected String usernameFormKey = DEFAULT_USERNAME_FORM_KEY;
 	protected String passwordFormKey = DEFAULT_PASSWORD_FORM_KEY;
 	protected String twoFactorAuthCodeFormKey = DEFAULT_CODE_FORM_KEY;
 
     protected String twoFactorFailureUrl = DEFAULT_TWO_FACTOR_FAILURE_URL;
+    protected String twoFactorChoiceUrl = DEFAULT_TWO_FACTOR_CHOICE_URL;
 	protected String twoFactorRedirectUrl = DEFAULT_TWO_FACTOR_REDIRECT_URL;
 	protected String loginRequestUrl = DEFAULT_LOGIN_REQUEST_URL;
 
@@ -165,7 +167,7 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
     	//redirect to 2FA code page if user is already awaiting valid code
 		//TODO change isUserAwaitingCode() to show sign in attempts not only codes sent. This is for auth app integration.
     	if(codeService.isStepOneComplete(request.getRequestedSessionId())) {
-    		response.sendRedirect(twoFactorRedirectUrl);
+    		response.sendRedirect(twoFactorChoiceUrl);
     		return null;
 		}
 
@@ -181,15 +183,16 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 		if(userDetails.isTwoFactorAuthEnabled()) {
 			TwoFactorPreference primaryPreference = userDetails.getTwoFactorAuthPreferences().get(1);
 
-			if (!primaryPreference.isKey()) {
-				//if first code is not TOTP: generate and send
-				String code = codeService.generateCode(request, userDetails.getUsername());
-				sendCode(request, userDetails, codeService.saveAttempt(request, username, code));
-			}else{
-				codeService.saveAttempt(request, username, null);
-			}
+			//TODO!!! must add login attempt
+//			if (!primaryPreference.isKey()) {
+//				//if first code is not TOTP: generate and send
+//				String code = codeService.generateCode(request, userDetails.getUsername());
+//				sendCode(request, userDetails, codeService.saveAttempt(request, username, code));
+//			}else{
+//				codeService.saveAttempt(request, username, null);
+//			}
 
-			response.sendRedirect(twoFactorRedirectUrl);
+			response.sendRedirect(twoFactorChoiceUrl);
 			return null;
 		}else{
 			return authentication;

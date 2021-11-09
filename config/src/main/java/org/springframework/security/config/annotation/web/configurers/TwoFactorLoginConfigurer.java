@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.twofa.stategies.codegener
 import org.springframework.security.web.authentication.twofa.stategies.sendattemp.TwoFactorAuthCodeSendStrategy;
 import org.springframework.security.web.authentication.twofa.stategies.sendfailure.NullSendFailureStrategy;
 import org.springframework.security.web.authentication.twofa.stategies.sendfailure.TwoFactorAuthCodeSendFailureStrategy;
+import org.springframework.security.web.authentication.ui.DefaultTwoFactorChoiceGeneratingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -44,6 +45,7 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 	private String twoFactorProcessingUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_PROCESSING_URL;
 	private String twoFactorRedirectUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_REDIRECT_URL;
 	private String twoFactorFailureUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_FAILURE_URL;
+	private String twoFactorChoiceUrl = TwoFactorAuthenticationFilter.DEFAULT_TWO_FACTOR_CHOICE_URL;
 
 	private boolean addTwoFactorAuthenticationProvider = true;
 	private UserDetailsService userDetailsService;
@@ -93,14 +95,23 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 			ProviderManager manager = (ProviderManager) http.getSharedObject(AuthenticationManager.class);
 			manager.getProviders().add(new TwoFactorAuthenticationProvider(codeService, userDetailsService, totpService));
 		}
+
 		super.configure(http);
+
+		DefaultTwoFactorChoiceGeneratingFilter generatingFilter
+				= new DefaultTwoFactorChoiceGeneratingFilter("/2FA/choice", "/login", "/2FA/choice?error", codeService, userDetailsService);
+		http.addFilterAfter(generatingFilter, TwoFactorAuthenticationFilter.class);
 	}
 
 	@Override
 	protected void updateAccessDefaults(H http) {
 		if(super.isPermitAll()) {
 			super.updateAccessDefaults(http);
-			PermitAllSupport.permitAll(http, this.twoFactorProcessingUrl, this.twoFactorRedirectUrl, this.twoFactorFailureUrl);
+			PermitAllSupport.permitAll(http,
+					this.twoFactorProcessingUrl,
+					this.twoFactorRedirectUrl,
+					this.twoFactorFailureUrl,
+					this.twoFactorChoiceUrl);
 		}
 	}
 
@@ -160,6 +171,11 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 
 	public TwoFactorLoginConfigurer<H> twoFactorFailureUrl(String url) {
 		this.twoFactorFailureUrl = url;
+		return TwoFactorLoginConfigurer.this;
+	}
+
+	public TwoFactorLoginConfigurer<H> twoFactorChoiceUrl(String url) {
+		this.twoFactorChoiceUrl = url;
 		return TwoFactorLoginConfigurer.this;
 	}
 

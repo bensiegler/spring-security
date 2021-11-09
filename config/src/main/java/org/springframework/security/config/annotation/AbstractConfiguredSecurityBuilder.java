@@ -332,7 +332,7 @@ public abstract class AbstractConfiguredSecurityBuilder<O, B extends SecurityBui
 	protected abstract O performBuild() throws Exception;
 
 	@SuppressWarnings("unchecked")
-	private void init() throws Exception {
+	private void init() throws Exception{
 		Collection<SecurityConfigurer<O, B>> configurers = getConfigurers();
 		for (SecurityConfigurer<O, B> configurer : configurers) {
 			configurer.init((B) this);

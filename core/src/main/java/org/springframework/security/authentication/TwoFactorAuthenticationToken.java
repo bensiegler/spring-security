@@ -10,8 +10,6 @@ public class TwoFactorAuthenticationToken extends AbstractAuthenticationToken {
 
 	private final Object principal;
 
-	private String confirmed2FACode;
-
 	private final Object credential;
 
 	public TwoFactorAuthenticationToken(Object principal, Object credential, Collection<? extends GrantedAuthority> authorities) {
@@ -19,13 +17,6 @@ public class TwoFactorAuthenticationToken extends AbstractAuthenticationToken {
 		this.principal = principal;
 		this.credential = credential;
 		super.setAuthenticated(true);
-	}
-
-	public TwoFactorAuthenticationToken(Object principal, Object credential, String code) {
-		super(null);
-		this.confirmed2FACode = code;
-		this.principal = principal;
-		this.credential = credential;
 	}
 
 	public TwoFactorAuthenticationToken(Object principal, Object credential) {
