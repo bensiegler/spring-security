@@ -1,6 +1,7 @@
 package org.springframework.security.web.authentication.twofa.stategies.codegeneration;
 
-public class SixDigitAuthCodeGenerationStrategy implements TwoFactorAuthCodeGenerationStrategy {
+//Implementation code generation strategy that generates a six-digit code
+public class TwoFactorAuthCodeGenerationStrategyImpl implements TwoFactorAuthCodeGenerationStrategy {
 
     public String generateCode() {
         StringBuilder code = new StringBuilder();

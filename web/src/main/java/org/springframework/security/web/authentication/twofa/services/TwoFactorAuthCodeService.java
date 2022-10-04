@@ -16,7 +16,7 @@ public interface TwoFactorAuthCodeService {
 
     void cleanUp(String sessionId);
 
-    boolean isStepOneComplete(String sessionId);
+    boolean isPasswordVerified(String sessionId);
 
     void setCodeRepository(TwoFactorAuthCodeRepository codeRepository);
 

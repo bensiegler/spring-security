@@ -11,9 +11,9 @@ import java.sql.SQLException;
 
 public class DatabaseTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRepository {
 
-    public static final String GET_TWO_FACTOR_CODE_BY_SESSION_ID = "SELECT * FROM two_factor_authentication_codes WHERE session_id = ?;";
-    public static final String REMOVE_TWO_FACTOR_CODE_BY_SESSION_ID = "DELETE FROM two_factor_authentication_codes WHERE session_id = ?;";
-    public static final String INSERT_TWO_FACTOR_CODE = "INSERT INTO two_factor_authentication_codes (session_id, two_factor_code, username, time_created) VALUES (?, ?, ?, ?);";
+    public static final String GET_TWO_FACTOR_CODE_BY_SESSION_ID = "SELECT * FROM two_factor_code WHERE cookie = ?;";
+    public static final String REMOVE_TWO_FACTOR_CODE_BY_SESSION_ID = "DELETE FROM two_factor_code WHERE cookie = ?;";
+    public static final String INSERT_TWO_FACTOR_CODE = "INSERT INTO two_factor_code (cookie, code, username, time_created) VALUES (?, ?, ?, ?);";
 
     private String getTwoFactorCodeBySessionIdQuery = GET_TWO_FACTOR_CODE_BY_SESSION_ID;
     private String removeTwoFactorCodeQuery = REMOVE_TWO_FACTOR_CODE_BY_SESSION_ID;
@@ -59,7 +59,7 @@ public class DatabaseTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRep
 			return new SignInAttempt
 					(
 							sessionId,
-							resultSet.getString("two_factor_code"),
+							resultSet.getString("code"),
 							resultSet.getString("username"),
 							resultSet.getLong("time_created")
 					);

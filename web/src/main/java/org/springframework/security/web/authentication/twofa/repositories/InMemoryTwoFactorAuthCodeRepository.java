@@ -4,22 +4,15 @@ import org.springframework.cache.Cache;
 import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 import org.springframework.util.Assert;
 
+import java.util.HashMap;
+
 public class InMemoryTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRepository {
 
-    private Cache cache;
-
-    public InMemoryTwoFactorAuthCodeRepository(Cache cache) {
-        this.cache = cache;
-    }
-
-    public void setCache(Cache cache) {
-        Assert.notNull(cache, "The cache cannot be null");
-        this.cache = cache;
-    }
+    private final HashMap<String, SignInAttempt> signInAttempts = new HashMap<>();
 
     @Override
     public void insertCode(SignInAttempt code) {
-        cache.put(code.getSessionId(), code);
+        signInAttempts.put(code.getSessionId(), code);
     }
 
     @Override
@@ -28,7 +21,7 @@ public class InMemoryTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRep
             return null;
         }
 
-        return cache.get(sessionId, SignInAttempt.class);
+        return signInAttempts.get(sessionId);
     }
 
     @Override
@@ -38,6 +31,6 @@ public class InMemoryTwoFactorAuthCodeRepository implements TwoFactorAuthCodeRep
 
     @Override
     public void removeCode(String sessionId) {
-        cache.evict(sessionId);
+        signInAttempts.remove(sessionId);
     }
 }

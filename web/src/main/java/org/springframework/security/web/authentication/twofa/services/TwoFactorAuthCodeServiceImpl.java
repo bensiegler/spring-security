@@ -4,7 +4,7 @@ package org.springframework.security.web.authentication.twofa.services;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.web.authentication.twofa.dtos.SignInAttempt;
 import org.springframework.security.web.authentication.twofa.repositories.TwoFactorAuthCodeRepository;
-import org.springframework.security.web.authentication.twofa.stategies.codegeneration.SixDigitAuthCodeGenerationStrategy;
+import org.springframework.security.web.authentication.twofa.stategies.codegeneration.TwoFactorAuthCodeGenerationStrategyImpl;
 import org.springframework.security.web.authentication.twofa.stategies.codegeneration.TwoFactorAuthCodeGenerationStrategy;
 import org.springframework.util.Assert;
 
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class TwoFactorAuthCodeServiceImpl implements TwoFactorAuthCodeService {
 	private final static long DEFAULT_EXPIRATION_TIME_IN_MILLIS = 90000;
-	private final static TwoFactorAuthCodeGenerationStrategy DEFAULT_GENERATION_STRATEGY = new SixDigitAuthCodeGenerationStrategy();
+	private final static TwoFactorAuthCodeGenerationStrategy DEFAULT_GENERATION_STRATEGY = new TwoFactorAuthCodeGenerationStrategyImpl();
 
     private TwoFactorAuthCodeGenerationStrategy generationStrategy = DEFAULT_GENERATION_STRATEGY;
     private long expirationTimeInMillis = DEFAULT_EXPIRATION_TIME_IN_MILLIS;
@@ -66,7 +66,7 @@ public class TwoFactorAuthCodeServiceImpl implements TwoFactorAuthCodeService {
 	}
 
 	@Override
-	public boolean isStepOneComplete(String sessionId) {
+	public boolean isPasswordVerified(String sessionId) {
 		SignInAttempt wrapper = repository.getCode(sessionId);
 
 		if(null == wrapper) {
@@ -75,6 +75,8 @@ public class TwoFactorAuthCodeServiceImpl implements TwoFactorAuthCodeService {
 
 		return !isCodeExpired(wrapper);
 	}
+
+
 
 	private String generateCodeString() {
 		return generationStrategy.generateCode();

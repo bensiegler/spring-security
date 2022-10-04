@@ -14,7 +14,7 @@ import org.springframework.security.web.authentication.twofa.repositories.TwoFac
 import org.springframework.security.web.authentication.twofa.services.TotpService;
 import org.springframework.security.web.authentication.twofa.services.TwoFactorAuthCodeServiceImpl;
 import org.springframework.security.web.authentication.twofa.services.TwoFactorAuthCodeService;
-import org.springframework.security.web.authentication.twofa.stategies.codegeneration.SixDigitAuthCodeGenerationStrategy;
+import org.springframework.security.web.authentication.twofa.stategies.codegeneration.TwoFactorAuthCodeGenerationStrategyImpl;
 import org.springframework.security.web.authentication.twofa.stategies.codegeneration.TwoFactorAuthCodeGenerationStrategy;
 import org.springframework.security.web.authentication.twofa.stategies.sendattemp.TwoFactorAuthCodeSendStrategy;
 import org.springframework.security.web.authentication.twofa.stategies.sendfailure.NullSendFailureStrategy;
@@ -206,7 +206,7 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 		}
 
 		public TwoFactorCodeServiceConfigurer useSixDigitCodes() {
-			TwoFactorLoginConfigurer.this.generationStrategy = new SixDigitAuthCodeGenerationStrategy();
+			TwoFactorLoginConfigurer.this.generationStrategy = new TwoFactorAuthCodeGenerationStrategyImpl();
 			return TwoFactorCodeServiceConfigurer.this;
 		}
 
@@ -220,8 +220,8 @@ public final class TwoFactorLoginConfigurer<H extends HttpSecurityBuilder<H>> ex
 			return TwoFactorCodeServiceConfigurer.this;
 		}
 
-		public TwoFactorCodeServiceConfigurer inMemoryRepository(Cache cache) {
-			TwoFactorLoginConfigurer.this.codeRepository = new InMemoryTwoFactorAuthCodeRepository(cache);
+		public TwoFactorCodeServiceConfigurer inMemoryRepository() {
+			TwoFactorLoginConfigurer.this.codeRepository = new InMemoryTwoFactorAuthCodeRepository();
 			return TwoFactorCodeServiceConfigurer.this;
 		}
 

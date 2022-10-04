@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.twofa.stategies.sendfailu
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -107,7 +108,7 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 		}else if(twoFactorAuthenticationProcessingRequestMatcher.matches(request)) {
     		return handleTwoFactorAuthenticationLogin(request, response);
 		}else if(twoFactorAuthCodeResendRequestMatcher.matches(request)) {
-			if(codeService.isStepOneComplete(request.getRequestedSessionId())) {
+			if(codeService.isPasswordVerified(request.getRequestedSessionId())) {
 				SignInAttempt codeWrapper = codeService.getCode(request.getRequestedSessionId());
 				UserDetails userDetails = userDetailsService.loadUserByUsername(codeWrapper.getUsername());
 				sendCode(request, userDetails, codeWrapper);
@@ -120,10 +121,10 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
     }
 
 	/**
-	 *
-	 * @param request
-	 * @param response
-	 * @return
+	 * This method decides whether the current request requires authentication by this filter.
+	 * @param request the current request being passed through the filter chain.
+	 * @param response the response matching the request
+	 * @return returns true if the filter should take action and false if it should not
 	 */
 	protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
 		if(request.getMethod().equals("POST")) {
@@ -166,7 +167,7 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
     private Authentication handleUsernamePasswordLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
     	//redirect to 2FA code page if user is already awaiting valid code
 		//TODO change isUserAwaitingCode() to show sign in attempts not only codes sent. This is for auth app integration.
-    	if(codeService.isStepOneComplete(request.getRequestedSessionId())) {
+    	if(codeService.isPasswordVerified(request.getRequestedSessionId())) {
     		response.sendRedirect(twoFactorChoiceUrl);
     		return null;
 		}
@@ -184,15 +185,15 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 			TwoFactorPreference primaryPreference = userDetails.getTwoFactorAuthPreferences().get(1);
 
 			//TODO!!! must add login attempt
-//			if (!primaryPreference.isKey()) {
-//				//if first code is not TOTP: generate and send
-//				String code = codeService.generateCode(request, userDetails.getUsername());
-//				sendCode(request, userDetails, codeService.saveAttempt(request, username, code));
-//			}else{
-//				codeService.saveAttempt(request, username, null);
-//			}
+			if (!primaryPreference.isKey()) {
+				//if first code is not TOTP: generate and send
+				String code = codeService.generateCode(request, userDetails.getUsername());
+				sendCode(request, userDetails, codeService.saveAttempt(request, username, code));
+			}else{
+				codeService.saveAttempt(request, username, null);
+			}
 
-			response.sendRedirect(twoFactorChoiceUrl);
+			response.sendRedirect(twoFactorRedirectUrl);
 			return null;
 		}else{
 			return authentication;
@@ -220,7 +221,7 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 		String sessionId = request.getRequestedSessionId();
 		String submittedCode = getRequestTwoFactorCode(request);
 
-		if(!codeService.isStepOneComplete(sessionId)) {
+		if(!codeService.isPasswordVerified(sessionId)) {
 			//redirect to login page if user did not already do step 1
 			response.sendRedirect(loginRequestUrl);
 			return null;
@@ -230,7 +231,6 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 		try {
 			Authentication authentication =  super.getAuthenticationManager().authenticate(authenticationToken);
 			codeService.cleanUp(sessionId);
-//			TODO response.sendRedirect(super.getSuccessHandler());
 			return authentication;
 		}catch (AuthenticationException e) {
 			//TODO start adding more failure handlers for customization
@@ -240,10 +240,11 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 	}
 
 	/**
-	 *
-	 * @param request
-	 * @param userDetails
-	 * @param codeWrapper
+	 * This method encapsulates the send and send failure behavior of the filter. It attempts to send a code
+	 * and if anything goes wrong a failure strategy is invoked.
+	 * @param request the current request
+	 * @param userDetails information on the user making the request
+	 * @param codeWrapper a wrapper storing the code and other meta data
 	 */
 	private void sendCode(HttpServletRequest request, UserDetails userDetails, SignInAttempt codeWrapper) {
 		try {
@@ -326,8 +327,8 @@ public class TwoFactorAuthenticationFilter extends AbstractAuthenticationProcess
 	}
 
 	/**
-	 * Add a URL to respond to two factor authentication requests
-	 * @param twoFactorProcessingUrl
+	 * Add a URL to respond to two-factor authentication requests
+	 * @param twoFactorProcessingUrl the URL for which the filter will confirm the authenticity of 2FA codes.
 	 */
 	public void setTwoFactorProcessingUrl(String twoFactorProcessingUrl) {
 		this.twoFactorAuthenticationProcessingRequestMatcher = new AntPathRequestMatcher(twoFactorProcessingUrl);
